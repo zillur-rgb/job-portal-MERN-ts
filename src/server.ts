@@ -1,15 +1,18 @@
-// imports
-import express from 'express';
+import mongoose from 'mongoose';
+import config from './config/config';
+import app from './app';
 
-// rest object
-const app = express();
-const PORT = 8080;
+async function main() {
+  try {
+    await mongoose.connect(config.database_url as string);
+    console.log(`Database connected to ${mongoose.connection.host}`);
 
-// routes
-app.get('/', (req, res) => {
-  res.send('<h1>Hello world</h1></h1>');
-});
+    app.listen(config.port, () => {
+      console.log(`Application is listening on port ${config.port}`);
+    });
+  } catch (error) {
+    console.log('error from server: ', error);
+  }
+}
 
-app.listen(PORT, () => {
-  console.log(`Application is running in port number ${PORT}`);
-});
+main();
