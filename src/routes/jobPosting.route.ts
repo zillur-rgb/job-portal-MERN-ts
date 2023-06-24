@@ -16,5 +16,6 @@ router.delete(
 );
 router.post('/create-job', verifyJwt, JobPostingController.createJob);
 router.get('/get-jobs', verifyJwt, JobPostingController.getAllJobs);
+router.get('/jobs-stats', verifyJwt, JobPostingController.statsJobPosting);
 
 export const JobPostingRouter = router;

@@ -4,6 +4,8 @@ import catchAsync from '../shared/catchAsync';
 import sendResponse from '../shared/sendResponse';
 import { Request, Response } from 'express';
 import ApiError from '../errors/ApiError';
+import mongoose from 'mongoose';
+import moment from 'moment';
 
 // Define a custom interface that extends the default Request interface
 interface CustomRequest extends Request {
@@ -103,9 +105,73 @@ const deleteJobPosting = catchAsync(
   },
 );
 
+// ========= Jobs STATS & FILTERS ========
+const statsJobPosting = catchAsync(
+  async (req: CustomRequest, res: Response) => {
+    const stats: { _id: string; count: number }[] = await JobPosting.aggregate([
+      // Search by user jobs
+      {
+        $match: { createdBy: new mongoose.Types.ObjectId(req?.user?.userId) },
+      },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+    const defaultStats = {
+      pending: stats[0]?.count || 0,
+      rejected: stats[1]?.count || 0,
+      interview: stats[2]?.count || 0,
+    };
+
+    // monthly yearly stats
+    let monthlyApplication = await JobPosting.aggregate([
+      {
+        $match: { createdBy: new mongoose.Types.ObjectId(req?.user?.userId) },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+          },
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    monthlyApplication = monthlyApplication.map((item) => {
+      const {
+        _id: { year, month },
+        count,
+      } = item;
+
+      const date = moment()
+        .month(month - 1)
+        .year(year)
+        .format('MMM Y');
+
+      return { date, count };
+    });
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: 'Stats',
+      data: {
+        totalJobs: stats.length,
+        defaultStats,
+        monthlyApplication,
+      },
+    });
+  },
+);
+
 export const JobPostingController = {
   createJob,
   getAllJobs,
   updateJobPosting,
   deleteJobPosting,
+  statsJobPosting,
 };
