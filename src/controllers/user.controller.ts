@@ -25,6 +25,7 @@ const updateUser = catchAsync(async (req: CustomRequest, res: Response) => {
     user.lastName = lastName;
     user.email = email;
     user.location = location;
+    user.password;
     await user.save();
     const token = user.createJWT();
     sendResponse(res, {

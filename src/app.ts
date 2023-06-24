@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import globalErrorHandler from './middlewares/globalErrorHandler';
 import { AuthRouter } from './routes/auth.route';
 import { UserRouter } from './routes/user.route';
+import { JobPostingRouter } from './routes/jobPosting.route';
 
 const app: Application = express();
 
@@ -16,6 +17,7 @@ app.use(morgan('dev'));
 // routes middlewares
 app.use('/api/v1/auth', AuthRouter);
 app.use('/api/v1/user', UserRouter);
+app.use('/api/v1/job-posted', JobPostingRouter);
 // Global error handler
 app.use(globalErrorHandler);
 
