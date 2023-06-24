@@ -38,7 +38,7 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
   }
 
   // find user by email
-  const user = await User.findOne({ email }).select('password');
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Invalid email or password!');
@@ -58,12 +58,12 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     success: true,
     message: 'User logged in',
     token,
-    // data: {
-    //   name: user.name,
-    //   lastName: user.lastName,
-    //   email: user.email,
-    //   location: user.location,
-    // },
+    data: {
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      location: user.location,
+    },
   });
 });
 
