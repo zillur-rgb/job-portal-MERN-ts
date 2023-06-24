@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config/config';
+import httpStatus from 'http-status';
+import sendResponse from '../shared/sendResponse';
 
 // Define a custom interface that extends the default Request interface
 interface CustomRequest extends Request {
@@ -15,7 +17,11 @@ const verifyJwt = async (
   const authHeader = req.headers.authorization as string;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    next('Auth failed');
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'No auth header found',
+    });
   }
 
   const token = authHeader?.split(' ')[1];
