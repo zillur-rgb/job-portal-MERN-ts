@@ -1,4 +1,11 @@
-import { Model } from 'mongoose';
+import { Model, Document } from 'mongoose';
+
+export interface IUserDocument extends IUser, Document {
+  createJWT(): string;
+  comparePassword(pw: string): boolean;
+}
+
+// export type IUserModel = Model<IUserDocument>;
 
 export interface IUser {
   name: string;
@@ -8,4 +15,4 @@ export interface IUser {
   location?: string;
 }
 
-export type IUserModel = Model<IUser, Record<string, unknown>>;
+export type IUserModel = Model<IUserDocument, Record<string, unknown>>;
