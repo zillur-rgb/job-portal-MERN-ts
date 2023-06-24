@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import globalErrorHandler from './middlewares/globalErrorHandler';
+import { AuthRouter } from './routes/auth.route';
 
 const app: Application = express();
 
@@ -12,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // routes middlewares
+app.use('/api/v1/auth', AuthRouter);
 
 // Global error handler
 app.use(globalErrorHandler);
