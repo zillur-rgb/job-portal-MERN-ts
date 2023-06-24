@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import globalErrorHandler from './middlewares/globalErrorHandler';
 
 const app: Application = express();
 
@@ -11,6 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // routes middlewares
+
+// Global error handler
+app.use(globalErrorHandler);
 
 // Test route
 app.get('/', (req, res) => {
