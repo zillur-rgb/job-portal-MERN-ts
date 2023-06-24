@@ -59,6 +59,7 @@ export const loginUser = catchAsync(async (req: Request, res: Response) => {
     message: 'User logged in',
     token,
     data: {
+      id: user._id,
       name: user.name,
       lastName: user.lastName,
       email: user.email,

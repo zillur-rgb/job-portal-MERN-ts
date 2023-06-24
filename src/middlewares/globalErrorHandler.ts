@@ -4,6 +4,7 @@ import { IGenericErrorMessage } from '../types/error.type';
 import config from '../config/config';
 import ApiError from '../errors/ApiError';
 import validationError from '../errors/ValidationError';
+import CastError from '../errors/CastError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
   let statusCode: number = httpStatus.INTERNAL_SERVER_ERROR;
@@ -21,6 +22,16 @@ const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
     (statusCode = simplifiedError.statusCode),
       (message = simplifiedError.message),
       (errorMessages = simplifiedError.errorMessages);
+  } else if (error?.name === 'CastError') {
+    const simplifiedError = CastError(error);
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorMessages = simplifiedError.errorMessages;
+  } else if (error instanceof Error) {
+    message = error?.message;
+    errorMessages = error?.message
+      ? [{ path: '', message: error?.message }]
+      : [];
   }
 
   res.status(statusCode).json({
