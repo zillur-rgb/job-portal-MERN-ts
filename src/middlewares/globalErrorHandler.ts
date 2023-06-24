@@ -2,16 +2,31 @@ import httpStatus from 'http-status';
 import { ErrorRequestHandler } from 'express';
 import { IGenericErrorMessage } from '../types/error.type';
 import config from '../config/config';
+import ApiError from '../errors/ApiError';
+import validationError from '../errors/ValidationError';
 
 const globalErrorHandler: ErrorRequestHandler = (error, req, res, next) => {
-  const statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-  //   let message: 'Something went wrong!';
-  const errorMessages: IGenericErrorMessage[] = [];
+  let statusCode: number = httpStatus.INTERNAL_SERVER_ERROR;
+  let message = 'Something went wrong!';
+  let errorMessages: IGenericErrorMessage[] = [];
+
+  if (error instanceof ApiError) {
+    (statusCode = error?.statusCode),
+      (message = error?.message),
+      (errorMessages = error?.message
+        ? [{ path: '', message: error?.message }]
+        : []);
+  } else if (error?.name === 'ValidationError') {
+    const simplifiedError = validationError(error);
+    (statusCode = simplifiedError.statusCode),
+      (message = simplifiedError.message),
+      (errorMessages = simplifiedError.errorMessages);
+  }
 
   res.status(statusCode).json({
     success: false,
-    message: 'Something went wrong!',
-    errorMessages: errorMessages,
+    message,
+    errorMessages,
     stack: config.env !== 'production' ? error?.stack : undefined,
   });
   next();
