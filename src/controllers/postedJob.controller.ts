@@ -6,6 +6,7 @@ import { Request, Response } from 'express';
 import ApiError from '../errors/ApiError';
 import mongoose from 'mongoose';
 import moment from 'moment';
+import { IQueryObject } from '../types/queryObjects.type';
 
 // Define a custom interface that extends the default Request interface
 interface CustomRequest extends Request {
@@ -27,15 +28,49 @@ const createJob = catchAsync(async (req: CustomRequest, res: Response) => {
 
 // ======= Get Jobs ==========
 const getAllJobs = catchAsync(async (req: CustomRequest, res: Response) => {
-  const createdBy = req?.user?.userId || '';
-  const job = await JobPosting.find({
-    createdBy,
-  });
+  const { status, jobType, search, sort } = req.query;
+
+  // Conditions for searching filters
+  const queryObject: IQueryObject = {
+    createdBy: req?.user?.userId,
+  };
+
+  // Logic filters
+  if (status && status !== 'all') {
+    queryObject.status = status as string;
+  }
+  if (jobType && jobType !== 'all') {
+    queryObject.jobType = jobType as string;
+  }
+  if (search) {
+    queryObject.position = { $regex: search, $option: 'i' };
+  }
+
+  let queryResult = JobPosting.find(queryObject);
+
+  // sorting
+  if (sort === 'latest') {
+    queryResult = queryResult.sort('-createdAt');
+  }
+  if (sort === 'oldest') {
+    queryResult = queryResult.sort('createdAt');
+  }
+
+  // Pagination
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  queryResult = queryResult.skip(skip).limit(limit);
+  const totalJobs = await JobPosting.countDocuments(queryResult);
+  const numOfPage = Math.ceil(totalJobs / limit);
+  const jobs = await queryResult;
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Fetched all jobs',
-    data: job,
+    data: { totalJobs, numOfPage, jobs },
   });
 });
 
