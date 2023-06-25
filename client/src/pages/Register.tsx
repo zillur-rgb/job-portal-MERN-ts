@@ -30,7 +30,7 @@ const Register = () => {
       justifyContent={'center'}
       minH={'100vh'}
     >
-      <Logo />
+      <Logo fontSize={24} />
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing={8}>
