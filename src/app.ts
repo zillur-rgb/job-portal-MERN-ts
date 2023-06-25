@@ -5,8 +5,14 @@ import globalErrorHandler from './middlewares/globalErrorHandler';
 import { AuthRouter } from './routes/auth.route';
 import { UserRouter } from './routes/user.route';
 import { JobPostingRouter } from './routes/jobPosting.route';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
 
 const app: Application = express();
+
+// security middlewares
+app.use(helmet());
+app.use(mongoSanitize());
 
 // middlewares
 app.use(cors());
