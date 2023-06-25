@@ -1,6 +1,11 @@
 import { Box, Button, Text, VStack } from '@chakra-ui/react';
 import Logo from '../components/logo/Logo';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { hideLoading, showLoading } from '../redux/features/alertSlice';
+import { apiRequest } from '../helpers/apiHelpers';
+import { toast } from 'react-toastify';
 
 type IRegister = {
   name: string;
@@ -17,8 +22,33 @@ const Login = () => {
     formState: { errors },
   } = useForm<IRegister>();
 
-  const onSubmit: SubmitHandler<IRegister> = (data) => {
-    console.log('data', data);
+  // hooks
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  // redux state
+  const { loading } = useAppSelector((state) => state.alerts);
+
+  const onSubmit: SubmitHandler<IRegister> = async (data) => {
+    const { email, password } = data;
+
+    try {
+      dispatch(showLoading());
+      const { data } = await apiRequest.post('/auth/login-user', {
+        email,
+        password,
+      });
+
+      if (data.success) {
+        dispatch(hideLoading());
+        localStorage.setItem('token', data.token);
+        toast.success('User has been logged in');
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      dispatch(hideLoading());
+      toast.error('Invalid credentials. Try again!');
+    }
   };
 
   return (
@@ -30,7 +60,7 @@ const Login = () => {
       justifyContent={'center'}
       minH={'100vh'}
     >
-      <Logo />
+      <Logo fontSize={36} />
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <VStack spacing={8}>
@@ -96,6 +126,8 @@ const Login = () => {
                 borderColor: 'brand.900',
               }}
               type="submit"
+              isLoading={loading}
+              loadingText="Loading"
             >
               Login
             </Button>

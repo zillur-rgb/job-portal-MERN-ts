@@ -43,7 +43,7 @@ export default function NavbarDesktop() {
         </HStack>
         {/* // Call to action items */}
         <HStack>
-          <ButtonComponent label={CTA} />
+          <ButtonComponent href="/register" label={CTA} />
         </HStack>
       </Flex>
     </chakra.header>
