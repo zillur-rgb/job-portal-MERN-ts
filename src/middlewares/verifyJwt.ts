@@ -33,7 +33,11 @@ const verifyJwt = async (
     req.user = { userId: payload.userId };
     next();
   } catch (error) {
-    throw Error('Error verification');
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.UNAUTHORIZED,
+      message: 'Token verification failed',
+    });
   }
 };
 export default verifyJwt;
