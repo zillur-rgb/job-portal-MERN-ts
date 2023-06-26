@@ -47,6 +47,8 @@ const updateUser = catchAsync(async (req: CustomRequest, res: Response) => {
 
 // ====== Get User Data =======
 export const getUser = catchAsync(async (req, res) => {
+  console.log('req.body', req.body.user);
+
   const user = await User.findById({ _id: req.body.user.userId });
   if (!user) {
     sendResponse(res, {

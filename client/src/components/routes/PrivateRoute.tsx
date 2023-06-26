@@ -30,11 +30,11 @@ const PrivateRoute = ({ children }: any) => {
         if (res.data.success) {
           dispatch(setUser(res.data.data));
         } else {
-          localStorage.clear();
+          // localStorage.clear();
           <Navigate to="/login" />;
         }
       } catch (error) {
-        localStorage.clear();
+        // localStorage.clear();
         dispatch(hideLoading());
         console.log('Error', error);
       }

@@ -30,7 +30,7 @@ const verifyJwt = async (
       token,
       config.jwt_secret as string,
     ) as JwtPayload;
-    req.user = { userId: payload.userId };
+    req.body.user = { userId: payload.userId };
     next();
   } catch (error) {
     sendResponse(res, {
