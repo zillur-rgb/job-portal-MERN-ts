@@ -3,13 +3,16 @@ import './App.css';
 import HomePage from './pages/Homepage';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import { Box } from '@chakra-ui/react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PublicRoute from './components/routes/PublicRoute';
 import PrivateRoute from './components/routes/PrivateRoute';
+import JobPosted from './pages/JobPosted';
+import AddAJob from './pages/AddAJob';
+import ProfileInformation from './pages/ProfileInformation';
+import CheckCandidates from './pages/CheckCandidates';
 
 function App() {
   return (
@@ -40,11 +43,43 @@ function App() {
             </PublicRoute>
           }
         />
-        <Route
+        {/* <Route
           path="/dashboard"
           element={
             <PrivateRoute>
-              <Dashboard />
+              <JobPosted />
+            </PrivateRoute>
+          }
+        /> */}
+        <Route
+          path="/dashboard/job-posted"
+          element={
+            <PrivateRoute>
+              <JobPosted />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard/add-new-job"
+          element={
+            <PrivateRoute>
+              <AddAJob />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard/profile"
+          element={
+            <PrivateRoute>
+              <ProfileInformation />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/dashboard/check-candidates"
+          element={
+            <PrivateRoute>
+              <CheckCandidates />
             </PrivateRoute>
           }
         />
